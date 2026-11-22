@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inshorts Squads Prototype</title>
+<style>
+:root{--y:#FFE14D;--g:#C9F27A;--p:#FF7AC6;--b:#7AD7FF;--k:#1a1a1a;--blue:#3B8BEB;--bg:#000;--card:#fff;--mut:#8a8a8a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e9e6df;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:24px 16px;min-height:100vh}
+.note{font-size:12px;color:#555;margin-bottom:12px;text-align:center;max-width:420px}
+.phone{width:390px;max-width:100%;height:844px;background:var(--bg);border-radius:46px;border:10px solid #111;position:relative;overflow:hidden;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:15px;font-weight:600}
+.tabs{display:flex;gap:18px;padding:6px 18px 10px;overflow-x:auto;white-space:nowrap;font-size:16px;font-weight:600;color:#bbb;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs span{cursor:pointer}
+.tabs .on{color:var(--blue)}
+.tabs .new{color:var(--k);background:var(--y);border:2px solid var(--y);border-radius:999px;padding:0 10px}
+.screen{position:absolute;top:44px;left:0;right:0;bottom:0;overflow-y:auto;display:none;padding-bottom:110px;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block}
+.nav{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:240px;height:62px;background:#1c1c1e;border-radius:31px;display:flex;justify-content:space-around;align-items:center;border:1px solid #333;z-index:5}
+.nav div{width:64px;height:46px;border-radius:23px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px}
+.nav .on{background:#333;color:var(--blue)}
+.news{background:var(--card);color:#111;margin:0 0 0 0;border-radius:18px 18px 0 0;overflow:hidden}
+.news .img{height:220px;display:flex;align-items:center;justify-content:center;font-size:64px;color:#fff;font-weight:800;letter-spacing:-2px}
+.news .body{padding:18px 20px}
+.brand{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#444;font-weight:700;font-size:14px;padding:6px 12px;border-radius:14px 14px 0 0;margin:-34px 0 8px;position:relative}
+.brand i{width:16px;height:16px;border-radius:4px;background:#E8432E;display:inline-block}
+.news h2{font-size:20px;line-height:1.3;margin-bottom:8px}
+.news p{font-size:16px;line-height:1.55;color:#444}
+.news .src{font-size:12px;color:#999;margin-top:10px}
+.banner{margin:12px 14px;border:2px solid var(--k);border-radius:16px;background:var(--y);color:var(--k);padding:14px;box-shadow:4px 4px 0 #fff;cursor:pointer}
+.banner b{font-size:16px}
+.banner .row{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:13px}
+.prog{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:14px;color:#888}
+.prog .bar{flex:1;height:4px;background:#333;border-radius:2px}
+.prog .bar i{display:block;height:100%;width:30%;background:#fff;border-radius:2px}
+.h{padding:6px 18px 4px;font-size:24px;font-weight:800;letter-spacing:-.5px}
+.sub{padding:0 18px 12px;font-size:13px;color:#aaa}
+.seg{display:flex;margin:0 18px 14px;border:2px solid #fff;border-radius:14px;overflow:hidden}
+.seg div{flex:1;text-align:center;padding:10px;font-weight:700;cursor:pointer;font-size:15px}
+.seg .on{background:#fff;color:var(--k)}
+.pc{border:2px solid var(--k);border-radius:18px;padding:14px;margin:0 14px 14px;color:var(--k);box-shadow:4px 4px 0 #fff}
+.pc h3{font-size:17px;margin-bottom:4px}
+.pc .s{font-size:13px;opacity:.8}
+.btn{display:block;width:calc(100% - 28px);margin:0 14px 12px;border:2px solid var(--k);border-radius:14px;padding:14px;font-size:16px;font-weight:800;text-align:center;cursor:pointer;color:var(--k);box-shadow:3px 3px 0 #fff;background:var(--y)}
+.btn.ghost{background:#111;color:#fff;border-color:#fff;box-shadow:none}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #fff}
+.friend{display:flex;align-items:center;gap:12px;padding:10px 14px;margin:0 14px 8px;border:2px solid #333;border-radius:14px;cursor:pointer}
+.friend.sel{border-color:var(--p);background:#2a1022}
+.av{width:40px;height:40px;border-radius:50%;border:2px solid var(--k);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--k);flex:none}
+.friend .n{font-weight:700}
+.friend .t{font-size:12px;color:#aaa}
+.tc{margin:0 14px 12px;border:2px solid var(--k);border-radius:20px;background:#fff;color:var(--k);overflow:hidden;box-shadow:5px 5px 0 var(--p)}
+.tc .top{background:var(--p);padding:10px 14px;display:flex;justify-content:space-between;font-size:12px;font-weight:800;border-bottom:2px solid var(--k)}
+.tc .q{padding:16px 14px 6px;font-size:13px;font-weight:700;color:#666}
+.clues{display:flex;flex-wrap:wrap;gap:8px;padding:4px 14px 12px}
+.clue{background:var(--g);border:2px solid var(--k);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px}
+.ban{padding:0 14px 14px;font-size:12px;color:#666}
+.ban b{display:inline-block;background:#111;color:#fff;border-radius:6px;padding:2px 8px;margin:4px 4px 0 0;text-decoration:line-through;text-decoration-color:var(--p);text-decoration-thickness:2px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}
+.opt{border:2px solid var(--k);border-radius:12px;padding:12px 8px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;background:#fff;min-height:52px;display:flex;align-items:center;justify-content:center}
+.opt.right{background:var(--g)}
+.opt.wrong{background:var(--p)}
+.guessrow{display:flex;gap:8px;padding:0 14px 10px}
+.guessrow input{flex:1;min-width:0;border:2px solid var(--k);border-radius:12px;padding:12px;font-size:15px}
+.guessrow button{border:2px solid var(--k);border-radius:12px;background:var(--y);font-weight:800;padding:0 14px;cursor:pointer}
+.mic{background:var(--b)!important;font-size:18px;padding:0 12px!important}.mic.rec{background:var(--p)!important;animation:pulse 1s infinite}@keyframes pulse{50%{transform:scale(1.08)}}.timelbl{padding:0 14px 6px;font-size:12px;color:#aaa;font-weight:700}
+.hintlink{padding:0 14px 12px;font-size:12px;color:var(--blue);cursor:pointer;font-weight:700}
+.reveal{margin:0 14px 12px;background:#fff;color:#111;border-radius:16px;padding:14px;display:none}
+.reveal h4{font-size:16px;margin-bottom:6px}
+.reveal p{font-size:14px;line-height:1.5;color:#444}
+.reveal .src{font-size:11px;color:#999;margin-top:8px}
+.timer{height:6px;background:#333;margin:0 14px 12px;border-radius:3px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--y);width:100%;transition:width .2s linear}
+.score{display:flex;justify-content:space-around;align-items:center;margin:0 14px 14px;padding:16px;border:2px solid var(--k);border-radius:18px;background:var(--b);color:var(--k);box-shadow:4px 4px 0 #fff}
+.score .big{font-size:40px;font-weight:900;text-align:center}
+.score .vs{font-weight:900;font-size:18px}
+.score .lbl{font-size:12px;text-align:center;font-weight:700}
+.lb{margin:0 14px 14px;border:2px solid var(--k);border-radius:18px;background:#fff;color:var(--k);overflow:hidden;box-shadow:4px 4px 0 var(--g)}
+.lb .r{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #ddd;font-size:14px}
+.lb .r:last-child{border-bottom:none}
+.lb .r.me{background:var(--y);font-weight:800}
+.lb .rank{width:24px;font-weight:900}
+.lb .pts{margin-left:auto;font-weight:800}
+.dots{display:flex;gap:6px;margin-top:6px}
+.dots i{width:28px;height:28px;border-radius:50%;border:2px solid var(--k);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:800}
+.pill{display:inline-block;border:2px solid var(--k);border-radius:999px;padding:2px 10px;font-size:11px;font-weight:800;background:#fff;color:var(--k)}
+.toast{position:absolute;top:56px;left:14px;right:14px;background:#1c1c1e;border:1px solid #444;border-radius:16px;padding:12px 14px;font-size:13px;z-index:10;display:none}
+.toast b{display:block;font-size:14px;margin-bottom:2px}
+.pred{margin:0 14px 12px;border:2px solid var(--k);border-radius:18px;background:var(--b);color:var(--k);padding:14px;box-shadow:4px 4px 0 #fff}
+.pred .opts{padding:10px 0 0}
+.lib{margin:0 14px 10px;border:2px solid #333;border-radius:14px;padding:12px;font-size:13px}
+.lib .a{font-weight:800;font-size:15px}
+.lib .c{color:#aaa;margin-top:2px}
+.lib .cat{float:right}
+.writer textarea{width:calc(100% - 28px);margin:0 14px 8px;border:2px solid var(--k);border-radius:12px;padding:12px;font-size:15px;min-height:90px;font-family:inherit}
+.warn{margin:0 14px 10px;font-size:13px;font-weight:700;min-height:18px}
+.share{margin:0 14px 14px;border:2px solid var(--k);border-radius:20px;background:var(--y);color:var(--k);padding:18px;text-align:center;box-shadow:5px 5px 0 var(--p)}
+.share .big{font-size:22px;font-weight:900;margin:6px 0}
+.fab{position:absolute;right:18px;top:300px;width:68px;height:68px;border-radius:50%;background:var(--y);border:3px solid var(--k);box-shadow:4px 4px 0 var(--p);color:var(--k);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:11px;z-index:8;cursor:grab;touch-action:none;user-select:none}.fab span{font-size:22px;line-height:1}.fab .badge{position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:var(--p);border:2px solid var(--k);font-size:11px;display:flex;align-items:center;justify-content:center}.fab.drag{cursor:grabbing;transform:scale(1.08)}
+.hint{position:absolute;top:50%;right:84px;transform:translateY(-50%);white-space:nowrap;background:#fff;color:var(--k);border:2px solid var(--k);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:900;box-shadow:3px 3px 0 var(--p);animation:nudge 1s ease-in-out infinite;pointer-events:none}.fab.left .hint{right:auto;left:84px}.hint .ar{display:inline-block;font-size:13px;line-height:1.2}@keyframes nudge{50%{margin-right:-6px;margin-left:6px}}.fab.left .hint{animation-direction:reverse}.tabhint{position:absolute;top:92px;left:108px;background:#fff;color:var(--k);border:2px solid var(--k);border-radius:10px;padding:3px 8px;font-size:11px;font-weight:900;z-index:7;animation:bob 1s ease-in-out infinite;pointer-events:none}@keyframes bob{50%{transform:translateY(-4px)}}
+.trophy{position:absolute;right:14px;top:2px;z-index:6;display:flex;align-items:center;gap:8px;background:var(--y);color:var(--k);border:2px solid var(--k);border-radius:14px;padding:5px 10px;box-shadow:3px 3px 0 var(--p);font-weight:900}.trophy .ic{font-size:22px}.trophy .col{display:flex;flex-direction:column;line-height:1.1}.trophy .l{font-size:9px;font-weight:800;opacity:.7}.trophy .v{font-size:16px}.trophy .sep{width:2px;height:28px;background:var(--k)}
+.back{padding:4px 18px 0;font-size:14px;color:var(--blue);cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<div class="note">Concept prototype for a product case study (Gameberry Labs). Not affiliated with or endorsed by Inshorts. News cards are written from public reporting, sources on each card.</div>
+<div class="phone">
+<div class="status"><span>8:42</span><span>●●● ◔ ▭</span></div>
+<div class="toast" id="toast"></div>
+
+<!-- FEED -->
+<div class="screen active" id="s-feed">
+<div class="tabs"><span class="on">My Feed</span><span class="new" onclick="go('home')">Squads ✦</span><span>Daily Ritual</span><span>Finance</span><span>Timelines</span></div>
+<div class="news">
+<div class="img" style="background:#2b2b2b">₹</div>
+<div class="body">
+<div class="brand"><i></i>inshorts</div>
+<h2>EPFO clears monthly payout option for retiring PF members</h2>
+<p>The EPFO board has approved a voluntary systematic withdrawal plan, letting retiring members take their PF corpus in monthly, quarterly or half-yearly instalments instead of one lump sum. The minimum balance members must keep drops from 25% to 10%. The change still needs government notification before it takes effect.</p>
+<div class="src">few hours ago | Business Standard</div>
+</div>
+</div>
+<div class="banner" onclick="go('home')">
+<b>Today's deck is live ✦</b>
+<div style="font-size:14px;margin-top:4px">Riya solved it in 2:10. Your squad "Chai Pe Charcha" is waiting on you.</div>
+<div class="row"><span>🔥 Squad streak: 6 days</span><span class="pill">Play →</span></div>
+</div>
+<div class="prog"><div class="bar"><i></i></div><span><b style="color:var(--blue)">3</b>/10</span></div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="s-home">
+<div class="trophy"><span class="ic">🏆</span><div class="col"><span class="l">YOU</span><span class="v" id="hYou">0</span></div><div class="sep"></div><div class="col"><span class="l" id="hTeamL">TEAM</span><span class="v" id="hTeam">0</span></div></div>
+<div class="back" onclick="go('feed')">← Feed</div>
+<div class="h">Inshorts Squads</div>
+<div class="sub">Yesterday's news. Today's game. Your friendship on the line.</div>
+<div class="seg"><div id="segD" class="on" onclick="mode('duel')">1v1 Duel</div><div id="segS" onclick="mode('squad')">Squad</div></div>
+<div id="m-duel">
+<div class="pc" style="background:var(--p)"><h3>Challenge one friend</h3><div class="s">Same cards, 60 seconds each, async. Play now, they play later. Only one friend needed to start.</div></div>
+<div class="sub" style="padding-top:0">Pick a friend</div>
+<div id="friends"></div>
+<div class="btn" onclick="startDeck('duel')">Start duel ⚔</div>
+<div class="btn ghost" onclick="go('write')">Write a Taboo clue for a friend ✎</div>
+</div>
+<div id="m-squad" style="display:none">
+<div class="pc" style="background:var(--g)">
+<h3>Chai Pe Charcha · 4 members</h3>
+<div class="s">Everyone solves the same deck. Squad score counts only when all finish within 24 hours.</div>
+<div class="dots" id="sqdots"></div>
+<div class="s" style="margin-top:8px">🔥 Streak 6 days · ❄ 1 freeze left this week</div>
+</div>
+<div class="btn" onclick="startDeck('squad')">Play today's 60-second blitz + 1 prediction</div>
+<div class="sub" style="padding-top:0">Friendship leaderboard · Delhi · this week</div>
+<div class="lb" id="lb"></div>
+<div class="btn ghost" onclick="go('library')">Browse all 27 cards in this week's pool</div>
+</div>
+</div>
+
+<!-- PLAY -->
+<div class="screen" id="s-play">
+<div class="trophy"><span class="ic">🏆</span><div class="col"><span class="l">YOU</span><span class="v" id="tYou">0</span></div><div class="sep"></div><div class="col"><span class="l" id="tTeamL">TEAM</span><span class="v" id="tTeam">0</span></div></div>
+<div class="back" onclick="go('home')">← Quit deck</div>
+<div class="sub" id="playhdr" style="padding-top:6px;padding-right:150px"></div>
+<div class="timelbl" id="tlbl">⏱ 60s</div><div class="timer"><i id="tbar"></i></div>
+<div class="tc">
+<div class="top"><span id="cat"></span><span id="cnum"></span></div>
+<div class="q">Solve as many as you can in 60 seconds.</div>
+<div class="clues" id="clues"></div>
+<div class="ban">Words the clue-writer couldn't use:<br><span id="ban"></span></div>
+<div class="guessrow"><input id="gin" placeholder="Type your guess" onkeydown="if(event.key==='Enter')typed()"><button id="mic" class="mic" onclick="voice()" aria-label="Speak your guess">🎤</button><button onclick="typed()">Go</button></div>
+<div class="hintlink" onclick="showOpts()">Stuck? Show 4 options (costs 1 point)</div>
+<div class="opts" id="opts" style="display:none"></div>
+</div>
+<div class="reveal" id="reveal"><h4 id="rh"></h4><p id="rp"></p><div class="src" id="rs"></div></div>
+<div class="btn ghost" id="nextbtn" onclick="skipCard()">Skip card →</div>
+</div>
+
+<!-- PREDICTION -->
+<div class="screen" id="s-pred">
+<div class="sub" style="padding-top:10px">Bonus card · results arrive tomorrow</div>
+<div class="h" style="font-size:22px">Make a call</div>
+<div class="pred"><div class="pill" style="margin-bottom:8px">PREDICTION</div><div id="predq" style="font-weight:800;font-size:17px;line-height:1.35"></div><div class="opts" id="predopts"></div><div id="predctx" style="font-size:12px;margin-top:10px"></div></div>
+<div class="btn" id="predbtn" style="display:none" onclick="finish()">See results →</div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+<div class="h" id="resh" style="padding-top:12px"></div>
+<div class="sub" id="ress"></div>
+<div class="score"><div><div class="big" id="me">0</div><div class="lbl">You</div></div><div class="vs">VS</div><div><div class="big" id="them">0</div><div class="lbl" id="themlbl">Riya</div></div></div>
+<div id="resextra"></div>
+<div class="share"><div class="pill">SHARE CARD</div><div class="big" id="sharebig"></div><div id="sharesm" style="font-size:13px"></div></div>
+<div class="btn" onclick="toastMsg('Shared to WhatsApp','Your squad card is in the group chat. 2 friends tapped it.')">Share to WhatsApp</div>
+<div class="btn ghost" onclick="go('home')">Back to Squads</div>
+</div>
+
+<!-- WRITE -->
+<div class="screen" id="s-write">
+<div class="back" onclick="go('home')">← Back</div>
+<div class="h">Set a card for Riya</div>
+<div class="sub">Describe the answer without the banned words. She guesses it on her turn.</div>
+<div class="tc" style="box-shadow:5px 5px 0 var(--g)">
+<div class="top" style="background:var(--g)"><span>YOUR WORD</span><span id="wcat"></span></div>
+<div style="padding:14px;font-size:22px;font-weight:900" id="wans"></div>
+<div class="ban">Don't say:<br><span id="wban"></span></div>
+</div>
+<div class="writer"><textarea id="wtxt" placeholder="e.g. Coastal town in Ganjam, first November landfall since 1995…" oninput="checkTaboo()"></textarea></div>
+<div class="warn" id="warn"></div>
+<div class="btn" onclick="sendClue()">Send to Riya</div>
+<div class="btn ghost" onclick="newWord()">Give me another word</div>
+</div>
+
+<!-- LIBRARY -->
+<div class="screen" id="s-library">
+<div class="back" onclick="go('home')">← Back</div>
+<div class="h">This week's card pool</div>
+<div class="sub">27 cards from 16–22 Nov 2026. Each daily deck draws 5.</div>
+<div id="libl"></div>
+</div>
+
+<div class="fab" id="fab" aria-label="Open Squads"><div class="badge">1</div><span>✦</span>SQUADS<div class="hint" id="hint"><span class="ar" id="har">Click here →</span></div></div><div class="tabhint" id="tabhint">↑ or click here</div>
+<div class="nav"><div onclick="go('feed')">⌕</div><div class="on" onclick="go('feed')">⌂</div><div onclick="go('home')">✦</div></div>
+</div>
+
+<script>
+const CARDS=[
+{a:"Cyclone Akvan",cat:"India",c:["Gopalpur","Ganjam","Landfall","First November since 1995"],b:["Cyclone","Storm","Odisha"],s:"The storm crossed the coast near Gopalpur in Ganjam district on 20 November, hours earlier than forecast and weaker than feared, with winds of 70–80 km/h. It was the first November landfall on that coast in over three decades, and heavy rain brought flash-flood warnings.",src:"Down To Earth, 20 Nov 2026"},
+{a:"Quad",cat:"World",c:["Four leaders","Manila","Critical minerals","Indo-Pacific"],b:["Modi","Trump","Summit"],s:"The leaders of the US, India, Japan and Australia met in Manila and agreed deals to secure critical mineral supply chains. Their joint statement raised concern about economic coercion and arbitrary export curbs without naming any country.",src:"Al Jazeera, 17 Nov 2026"},
+{a:"Manila",cat:"World",c:["ASEAN host","Quad venue","Pasig River","Jeepneys"],b:["Philippines","Capital","Quad"],s:"The Philippine capital hosted both an ASEAN summit and the first leader-level Quad meeting in over two years, opening a three-day Asia trip for the US president.",src:"Anadolu Agency / Al Jazeera, Nov 2026"},
+{a:"Shenzhen",cat:"World",c:["APEC host","Trump, Xi, Putin","Tech hub","Near Hong Kong"],b:["China","APEC","Xi"],s:"The Chinese tech city hosted APEC and a three-way meeting of the US, Chinese and Russian leaders on security and nuclear risks. No major breakthrough on Ukraine or Iran was reported.",src:"Al Jazeera / weekly wrap, Nov 2026"},
+{a:"Sanae Takaichi",cat:"World",c:["Quad leader","First woman","LDP","Rare earths worry"],b:["Japan","Tokyo","Prime minister"],s:"Japan's leader joined the Quad meeting in Manila, where critical minerals topped the agenda. Her country has faced restricted access to key minerals for nearly a year.",src:"Al Jazeera, 17 Nov 2026"},
+{a:"International Court of Justice",cat:"World",c:["The Hague","Genocide ruling","Myanmar","Rohingya case"],b:["Court","UN","ICJ"],s:"The world court held Myanmar responsible for genocide against the Rohingya. Myanmar rejected the ruling as unfair.",src:"Weekly news wrap / Open Chronicle, Nov 2026"},
+{a:"Peru",cat:"World",c:["Junín region","6.7 magnitude","Lima evacuations","Machu Picchu"],b:["Earthquake","Lima","Andes"],s:"A strong quake struck the central Junín region. Residents in the capital briefly evacuated buildings, and early reports showed no tsunami threat or major damage.",src:"Weekly news wrap, Nov 2026"},
+{a:"Strait of Hormuz",cat:"World",c:["Musandam","Tankers hit","Oil chokepoint","Near Oman"],b:["Iran","Oil","Tanker"],s:"Two tankers were reportedly struck near Oman's Musandam Peninsula, raising fears for the narrow channel that carries a large share of the world's oil.",src:"Open Chronicle (UKMTO cited), 21 Nov 2026"},
+{a:"Brent crude",cat:"Business",c:["About $90","Barrel","Gulf supply fears","Global benchmark"],b:["Oil","Petrol","Price"],s:"The global oil benchmark climbed to about $90 a barrel in early trade on supply worries after reported attacks around Saudi Arabia and disruption near Hormuz.",src:"Kotak Neo market wrap, 20 Nov 2026"},
+{a:"Sensex",cat:"Business",c:["83,919","Nine-month high","30 stocks","Dalal Street"],b:["Nifty","BSE","Market"],s:"India's benchmark rose about 900 points to 83,919.71 on 20 November, led by banks and IT, as foreign investors kept buying. Markets ended a fourth straight weekly gain at nine-month highs.",src:"Kotak Neo market wrap, 20 Nov 2026"},
+{a:"Foreign investors (FPIs)",cat:"Business",c:["₹84,291 crore","Record fortnight","Banks favoured","Inflows"],b:["Foreign","FII","Investor"],s:"Overseas funds poured a record ₹84,291 crore into Indian shares in the first half of November, more than half of it into banking and finance stocks.",src:"Kotak Neo market wrap, 20 Nov 2026"},
+{a:"EPFO",cat:"Business",c:["240th board meeting","Monthly payouts","25% to 10%","Retirement corpus"],b:["PF","Pension","Provident"],s:"The retirement fund body approved a voluntary plan for retiring members to draw their corpus in instalments, and cut the minimum balance to 10%. It still needs government notification.",src:"Business Standard, 20 Nov 2026"},
+{a:"Maruti Suzuki",cat:"Business",c:["Fourth hike this year","0.31%","From 22 November","Cost pressures"],b:["Car","Swift","Suzuki"],s:"India's largest carmaker raised prices on select models from 22 November, an average of about 0.31%, blaming sustained cost pressures. It is the fourth increase this year.",src:"NDTV Profit via Inshorts, 22 Nov 2026"},
+{a:"Mahanadi Coalfields",cat:"Business",c:["₹8,981 crore IPO","48% on Day 2","Coal India arm","PSU listing"],b:["Coal","IPO","Odisha"],s:"The state-owned miner's ₹8,981 crore public issue was 48% subscribed by the second day, according to exchange data.",src:"IndiaIPO daily update, 21 Nov 2026"},
+{a:"Razorpay",cat:"Business",c:["Updated DRHP","February 2027 listing","Payment gateway","Bengaluru fintech"],b:["Payments","IPO","UPI"],s:"The fintech is reportedly preparing updated draft listing papers, targeting a stock market debut in February 2027.",src:"Inc42, 21 Nov 2026"},
+{a:"Rediff",cat:"Business",c:["₹600 crore IPO","Old-school portal","Fresh issue only","Mail from the 90s"],b:["Email","IPO","Portal"],s:"The veteran internet company filed updated papers for a ₹600 crore IPO made up entirely of new shares.",src:"Inc42, 21 Nov 2026"},
+{a:"Boba Bhai",cat:"Business",c:["$18 million","Series B","Tapioca pearls","QSR chain"],b:["Tea","Boba","Bubble"],s:"The bubble-tea and quick-service chain raised $18 million in a Series B round, part of a week in which Indian startups raised about $291 million.",src:"Inc42, 21 Nov 2026"},
+{a:"Ramayana – Part I",cat:"Entertainment",c:["Ranbir & Yash","₹70 crore on Day 11","Epic","Two-part saga"],b:["Ram","Ravan","Ranbir"],s:"The big-budget epic collected about ₹70.2 crore net in India on its 11th day, far ahead of every other film in theatres, and is also playing across eight overseas markets.",src:"Bollywood Hungama, 15 Nov 2026"},
+{a:"Delhi smog",cat:"India",c:["Very poor AQI","Severe stations","Winter haze","Masks out"],b:["Delhi","Pollution","Air"],s:"Air quality in the capital stayed in the very poor category this week, with several monitoring stations logging severe readings.",src:"Weekly news wrap, 22 Nov 2026"},
+{a:"Yamuna",cat:"India",c:["Supreme Court rebuke","Untreated sewage","Toxic foam","Flows past Agra"],b:["River","Delhi","Ganga"],s:"The Supreme Court criticised authorities over the river's worsening state, citing untreated sewage and industrial waste.",src:"Weekly news wrap, 22 Nov 2026"},
+{a:"Namo Bharat",cat:"India",c:["Delhi–Meerut","Limited-stop services","Rapid rail","Peak hours"],b:["Train","RRTS","Metro"],s:"Extra limited-stop services were added on the Delhi–Meerut rapid rail corridor to cut peak-hour travel time.",src:"Weekly news wrap, 22 Nov 2026"},
+{a:"India–Japan 2+2",cat:"India",c:["Fourth edition","Tokyo","Foreign + defence","Ministers"],b:["Japan","Defence","Dialogue"],s:"Foreign and defence ministers of both countries met in Tokyo for their fourth joint dialogue on strategic and security cooperation.",src:"Weekly news wrap, 22 Nov 2026"},
+{a:"Panchayat elections",cat:"India",c:["Fourth and final phase","Zila parishad","Rajasthan","Grassroots"],b:["Vote","Village","Election"],s:"Rajasthan wrapped up the last phase of its local body polls, with thousands contesting panchayat and zila parishad seats.",src:"Weekly news wrap, 22 Nov 2026"},
+{a:"Gaganyaan",cat:"India",c:["LVM-3","December target","Human spaceflight","Sriharikota"],b:["ISRO","Astronaut","Space"],s:"India's human spaceflight programme has its next mission, Gaganyaan-1 on the LVM-3 rocket, listed for December 2026 without a fixed date.",src:"Satellite Tracker launch schedule, Nov 2026"},
+{a:"Shubman Gill",cat:"Sports",c:["ODI double ton","Guwahati record chase","Player of the Series","Captain"],b:["Gill","Cricket","India"],s:"India's ODI captain scored 334 runs in the home series against West Indies, including a double century in a record chase in Guwahati, to be named Player of the Series.",src:"Wikipedia series page, Oct 2026"},
+{a:"Mitchell Santner",cat:"Sports",c:["Kiwi captain","Left-arm spin","Hosting India","Five ODIs"],b:["New Zealand","Kiwis","Cricket"],s:"He leads the home side's white-ball teams as India tour from 22 October to 1 December for two Tests, five ODIs and five T20Is.",src:"Wikipedia tour page, Nov 2026"},
+{a:"Dreamteam",cat:"Business",c:["$53 million","Biggest round of the week","AI apps","Accel-backed"],b:["AI","Startup","Funding"],s:"The AI application startup raised $53 million, the largest round in a week when AI led startup funding with about $114 million across seven deals.",src:"Inc42, 21 Nov 2026"}
+];
+const PREDS=[
+{q:"Will the Sensex close above 84,000 on Friday, 27 November?",o:["Yes","No"],ctx:"It closed at 83,919.71 on 20 November (Kotak Neo)."},
+{q:"Will Mahanadi Coalfields' IPO be fully subscribed by close?",o:["Yes","No"],ctx:"It was 48% subscribed on Day 2 (IndiaIPO)."},
+{q:"Will Gaganyaan-1 launch before 31 December 2026?",o:["Yes","No"],ctx:"Listed for December with no fixed date (Satellite Tracker)."}
+];
+const FRIENDS=[{n:"Riya",t:"Played at 8:42 AM · 4/5",c:"var(--p)",sc:4},{n:"Kabir",t:"Hasn't played today",c:"var(--g)",sc:3},{n:"Aman",t:"Played yesterday",c:"var(--b)",sc:5}];
+let sel=0,deck=[],idx=0,pts=0,curMode="duel",dayOffset=0,timer=null,tleft=30,used=false,opened=false,writeIdx=3;
+function go(s){document.getElementById('fab').style.display=s==='feed'?'flex':'none';document.getElementById('tabhint').style.display=s==='feed'?'block':'none';document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));document.getElementById('s-'+s).classList.add('active');document.getElementById('s-'+s).scrollTop=0;if(s==='library')renderLib();if(s==='write')renderWrite()}
+function mode(m){curMode=m;document.getElementById('m-duel').style.display=m==='duel'?'block':'none';document.getElementById('m-squad').style.display=m==='squad'?'block':'none';document.getElementById('segD').className=m==='duel'?'on':'';document.getElementById('segS').className=m==='squad'?'on':''}
+function renderFriends(){document.getElementById('friends').innerHTML=FRIENDS.map((f,i)=>`<div class="friend ${i===sel?'sel':''}" onclick="sel=${i};renderFriends()"><div class="av" style="background:${f.c}">${f.n[0]}</div><div><div class="n">${f.n}</div><div class="t">${f.t}</div></div></div>`).join('')}
+function renderSquad(){const m=[["R","var(--p)","✓"],["K","var(--g)","…"],["A","var(--b)","✓"],["You","var(--y)","?"]];document.getElementById('sqdots').innerHTML=m.map(x=>`<i style="background:${x[1]};width:auto;padding:0 8px;border-radius:999px">${x[0]} ${x[2]}</i>`).join('');
+const rows=[["Momos Mafia",412],["Chai Pe Charcha",388,1],["Backbenchers 2.0",351],["Office Ka Group",297],["Gurgaon Grind",240]];document.getElementById('lb').innerHTML=rows.map((r,i)=>`<div class="r ${r[2]?'me':''}"><span class="rank">${i+1}</span><span>${r[0]}${r[2]?' (you)':''}</span><span class="pts">${r[1]}</span></div>`).join('')}
+function shuffle(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1])}
+let results=[],weekYou=46,teamBase=342;function updTrophy(){const team=teamBase+weekYou+pts;['t','h'].forEach(p=>{const y=document.getElementById(p+'You'),t=document.getElementById(p+'Team'),l=document.getElementById(p+'TeamL');if(!y)return;y.textContent=weekYou+pts;t.textContent=team;l.textContent=curMode==='duel'&&p==='t'?'SQUAD':'TEAM'})}function startDeck(m){curMode=m;deck=[];for(let i=0;i<12;i++)deck.push(CARDS[(dayOffset*12+i)%CARDS.length]);dayOffset++;idx=0;pts=0;results=[];go('play');updTrophy();startTimer();showCard()}
+function showCard(){const c=deck[idx];used=false;opened=false;document.getElementById('playhdr').textContent=(curMode==='duel'?`Duel vs ${FRIENDS[sel].n}`:'Squad deck · Chai Pe Charcha');document.getElementById('cat').textContent=c.cat.toUpperCase();document.getElementById('cnum').textContent=`CARD ${idx+1}`;document.getElementById('clues').innerHTML=c.c.map(x=>`<span class="clue">${x}</span>`).join('');document.getElementById('ban').innerHTML=c.b.map(x=>`<b>${x}</b>`).join('');document.getElementById('gin').value='';document.getElementById('opts').style.display='none';document.getElementById('reveal').style.display='none';
+let pool=CARDS.filter(x=>x.a!==c.a&&x.cat===c.cat);if(pool.length<3)pool=CARDS.filter(x=>x.a!==c.a);const o=shuffle([c.a,...shuffle(pool).slice(0,3).map(x=>x.a)]);document.getElementById('opts').innerHTML=o.map(x=>`<div class="opt" onclick="pick(this,'${x.replace(/'/g,"\\'")}')">${x}</div>`).join('');document.getElementById('gin').focus()}
+function startTimer(){clearInterval(timer);tleft=60;const t=document.getElementById('tbar');t.style.width='100%';timer=setInterval(()=>{tleft-=.2;t.style.width=Math.max(0,tleft/60*100)+'%';document.getElementById('tlbl').textContent='⏱ '+Math.max(0,Math.ceil(tleft))+'s';if(tleft<=0){clearInterval(timer);timeUp()}},200)}
+let rec=null;
+function voice(){if(used)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const m=document.getElementById('mic');if(!SR){toastMsg('Voice guess','Your browser doesn\'t support voice here. On the phone app, tap and speak your answer.');return}if(rec){rec.stop();return}rec=new SR();rec.lang='en-IN';rec.interimResults=true;m.classList.add('rec');rec.onresult=e=>{document.getElementById('gin').value=Array.from(e.results).map(r=>r[0].transcript).join('')};rec.onend=()=>{m.classList.remove('rec');rec=null;if(document.getElementById('gin').value.trim())typed()};rec.onerror=()=>{m.classList.remove('rec');rec=null;toastMsg('Mic unavailable','Allow microphone access, or type your guess.')};rec.start();toastMsg('Listening…','Say your answer, e.g. "Cyclone Akvan".')}
+function norm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
+function typed(){if(used)return;const g=norm(document.getElementById('gin').value);if(!g){toastMsg('Type a guess first','Or tap "Show 4 options".');return}const a=deck[idx].a;const parts=a.split(/[\s–\-()]+/).map(norm).filter(x=>x.length>2);const ok=norm(a).includes(g)&&g.length>=3||parts.some(p=>p===g);resolve(ok,'typed')}
+function showOpts(){if(used)return;opened=true;document.getElementById('opts').style.display='grid'}
+function pick(el,x){if(used)return;const ok=x===deck[idx].a;el.classList.add(ok?'right':'wrong');if(!ok){document.querySelectorAll('.opt').forEach(o=>{if(o.textContent===deck[idx].a)o.classList.add('right')})}resolve(ok,'opt')}
+function resolve(ok,how){if(used)return;used=true;const c=deck[idx];if(ok)pts+=opened?1:2;results.push({c,ok});const f=document.getElementById('rh');document.getElementById('reveal').style.display='block';f.textContent=(ok?'✓ ':'✗ ')+c.a;document.getElementById('rp').textContent='';document.getElementById('rs').textContent='';updTrophy();document.getElementById('playhdr').textContent=(curMode==='duel'?`Duel vs ${FRIENDS[sel].n}`:'Squad deck · Chai Pe Charcha');setTimeout(()=>{if(tleft>0)nextCard()},650)}
+function skipCard(){if(used)return;used=true;results.push({c:deck[idx],ok:false,skip:true});nextCard()}
+function timeUp(){used=true;if(rec)rec.stop();toastMsg("Time's up!",`${results.filter(r=>r.ok).length} solved in 60 seconds.`);setTimeout(goPred,900)}
+function nextCard(){idx++;if(idx<deck.length&&tleft>0){showCard()}else{clearInterval(timer);goPred()}}
+function goPred(){const p=PREDS[(dayOffset-1)%PREDS.length];document.getElementById('predq').textContent=p.q;document.getElementById('predctx').textContent=p.ctx;document.getElementById('predopts').innerHTML=p.o.map(x=>`<div class="opt" onclick="predict(this)">${x}</div>`).join('');document.getElementById('predbtn').style.display='none';go('pred')}
+function predict(el){document.querySelectorAll('#predopts .opt').forEach(o=>o.classList.remove('right'));el.classList.add('right');document.getElementById('predbtn').style.display='block';toastMsg('Locked in','Result arrives tomorrow at 9 AM. That\'s your reason to come back.')}
+function finish(){const solved=results.filter(r=>r.ok).length;const max=results.length*2;const me=pts;const review=`<div class="sub" style="padding-top:0">Review: read the stories you just played</div>`+results.map(r=>`<div class="reveal" style="display:block"><h4>${r.ok?'✓':'✗'} ${r.c.a}</h4><p>${r.c.s}</p><div class="src">Source: ${r.c.src}</div></div>`).join('');if(curMode==='duel'){const f=FRIENDS[sel];const them=f.sc*3;document.getElementById('resh').textContent=me>them?'You win the duel!':me===them?'It\'s a draw!':`${f.n} takes it`;document.getElementById('ress').textContent=`${solved} card${solved===1?"":"s"} solved in 60 seconds. 2 points each, 1 with options.`;document.getElementById('me').textContent=me;document.getElementById('them').textContent=them;document.getElementById('themlbl').textContent=f.n;document.getElementById('resextra').innerHTML=review+`<div class="pc" style="background:var(--g)"><h3>Rematch tomorrow?</h3><div class="s">New deck drops at 7 AM from today's news. Read today, win tomorrow.</div></div>`;document.getElementById('sharebig').textContent=`${solved} card${solved===1?"":"s"} in 60s vs ${f.n}`;document.getElementById('sharesm').textContent='Inshorts Squads · Duel · today\'s deck'}else{document.getElementById('resh').textContent='Squad deck done!';document.getElementById('ress').textContent='Kabir is the last one left. Nudge him?';document.getElementById('me').textContent=me;document.getElementById('them').textContent=29+me;document.getElementById('themlbl').textContent='Squad';document.getElementById('resextra').innerHTML=review+`<div class="lb"><div class="r"><span class="rank">🏅</span><span>Squad MVP this week</span><span class="pts">Riya</span></div><div class="r me"><span class="rank">↑</span><span>Chai Pe Charcha moves to</span><span class="pts">#1 if Kabir plays</span></div></div><div class="btn" onclick="toastMsg('Nudge sent to Kabir','One nudge per day, so the squad doesn\\'t spam.')">Nudge Kabir 👋</div>`;document.getElementById('sharebig').textContent='Chai Pe Charcha · #2 in Delhi';document.getElementById('sharesm').textContent='🔥 6-day squad streak · Inshorts Squads'}weekYou+=pts;pts=0;updTrophy();go('result')}
+function toastMsg(t,m){const e=document.getElementById('toast');e.innerHTML=`<b>${t}</b>${m}`;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2600)}
+function renderLib(){document.getElementById('libl').innerHTML=CARDS.map((c,i)=>`<div class="lib"><span class="pill cat" style="background:${{India:'#C9F27A',World:'#7AD7FF',Business:'#FFE14D',Sports:'#FF7AC6',Entertainment:'#FF7AC6'}[c.cat]}">${c.cat}</span><div class="a">${i+1}. ${c.a}</div><div class="c">Clues: ${c.c.join(' · ')}</div><div class="c">Banned: ${c.b.join(', ')}</div><div class="c" style="font-size:11px">${c.src}</div></div>`).join('')}
+function renderWrite(){const c=CARDS[writeIdx%CARDS.length];document.getElementById('wans').textContent=c.a;document.getElementById('wcat').textContent=c.cat.toUpperCase();document.getElementById('wban').innerHTML=c.b.concat(c.a.split(/[\s–\-()]+/).filter(x=>x.length>2)).map(x=>`<b>${x}</b>`).join('');document.getElementById('wtxt').value='';document.getElementById('warn').textContent=''}
+function newWord(){writeIdx++;renderWrite()}
+function banned(){const c=CARDS[writeIdx%CARDS.length];return c.b.concat(c.a.split(/[\s–\-()]+/).filter(x=>x.length>2))}
+function checkTaboo(){const t=document.getElementById('wtxt').value.toLowerCase();const hit=banned().filter(b=>new RegExp('\\b'+b.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(t));const w=document.getElementById('warn');if(hit.length){w.style.color='#FF7AC6';w.textContent='Taboo! You used: '+hit.join(', ')}else if(t.trim()){w.style.color='#C9F27A';w.textContent='Clean clue ✓'}else w.textContent=''}
+function sendClue(){const t=document.getElementById('wtxt').value.trim();if(!t){document.getElementById('warn').style.color='#FF7AC6';document.getElementById('warn').textContent='Write a clue first';return}const hit=banned().filter(b=>new RegExp('\\b'+b.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(t.toLowerCase()));if(hit.length){checkTaboo();return}toastMsg('Clue sent to Riya','She gets one notification: "You have a clue waiting." That\'s her trigger to open the app.');setTimeout(()=>go('home'),1200)}
+renderFriends();renderSquad();updTrophy();
+(function(){const f=document.getElementById('fab'),ph=document.querySelector('.phone');let sx,sy,ox,oy,moved=false,down=false;
+f.addEventListener('pointerdown',e=>{down=true;moved=false;sx=e.clientX;sy=e.clientY;ox=f.offsetLeft;oy=f.offsetTop;f.setPointerCapture(e.pointerId);f.classList.add('drag')});
+f.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;if(!moved)return;const x=Math.min(Math.max(6,ox+dx),ph.clientWidth-f.offsetWidth-6),y=Math.min(Math.max(50,oy+dy),ph.clientHeight-f.offsetHeight-90);f.style.left=x+'px';f.style.top=y+'px';f.style.right='auto'});
+f.addEventListener('pointerup',e=>{down=false;f.classList.remove('drag');if(!moved){go('home');return}const mid=ph.clientWidth/2;const L=f.offsetLeft+f.offsetWidth/2<mid;f.style.left=(L?10:ph.clientWidth-f.offsetWidth-10)+'px';f.classList.toggle('left',L);document.getElementById('har').textContent=L?'← Click here':'Click here →'});})();
+</script>
+</body>
+</html>
